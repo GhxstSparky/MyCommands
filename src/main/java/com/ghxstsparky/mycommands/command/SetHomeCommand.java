@@ -23,6 +23,27 @@ public class SetHomeCommand{
 	private int setHome(CommandSourceStack source, String arg) throws CommandSyntaxException {
 		ServerPlayer player = source.getPlayerOrException();
 		BlockPos playerPos = player.blockPosition();
+		String homes = player.getPersistentData().getString(MyCommands.MOD_ID + "homes");
+		
+		if (homes.length() < 1) {
+			player.getPersistentData().putString(MyCommands.MOD_ID + "homes", "home" );
+		}
+		
+		String homeList[] = player.getPersistentData().getString(MyCommands.MOD_ID + "homes").split(" ");
+		
+		boolean homeExists = false;
+		
+		for (String s : homeList) {
+			if (s == arg) {
+				homeExists = true;
+				break;
+			}
+		}
+		
+		if (homeExists) {
+			player.getPersistentData().putString(MyCommands.MOD_ID + "homes", homes + " " + arg);
+		}
+		
 		
 		player.getPersistentData().putIntArray(MyCommands.MOD_ID + arg,
 				new int[]{ playerPos.getX(), playerPos.getY(), playerPos.getZ() });
