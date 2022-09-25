@@ -2,6 +2,7 @@ package com.ghxstsparky.mycommands.event;
 
 import com.ghxstsparky.mycommands.MyCommands;
 import com.ghxstsparky.mycommands.command.HomeCommand;
+import com.ghxstsparky.mycommands.command.RemoveHomeCommand;
 import com.ghxstsparky.mycommands.command.SetHomeCommand;
 
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -15,6 +16,7 @@ public class ModEvents {
 	public static void onCommandsRegister(RegisterCommandsEvent event) {
 		new SetHomeCommand(event.getDispatcher());
 		new HomeCommand(event.getDispatcher());
+		new RemoveHomeCommand(event.getDispatcher());
 		
 		ConfigCommand.register(event.getDispatcher());
 	}

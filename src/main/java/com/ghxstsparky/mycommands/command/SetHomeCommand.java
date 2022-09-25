@@ -23,32 +23,37 @@ public class SetHomeCommand{
 	private int setHome(CommandSourceStack source, String arg) throws CommandSyntaxException {
 		ServerPlayer player = source.getPlayerOrException();
 		BlockPos playerPos = player.blockPosition();
-		String homes = player.getPersistentData().getString(MyCommands.MOD_ID + "homes");
-		
-		if (homes.length() < 1) {
-			player.getPersistentData().putString(MyCommands.MOD_ID + "homes", "home" );
+		String homes[] = player.getPersistentData().getString(MyCommands.MOD_ID + "homes").split(" ");
+		int maxHomes = 3;
+		if (source.hasPermission(2)) {
+			maxHomes = 20;
 		}
-		
-		String homeList[] = player.getPersistentData().getString(MyCommands.MOD_ID + "homes").split(" ");
 		
 		boolean homeExists = false;
 		
-		for (String s : homeList) {
+		for (String s : homes) {
 			if (s == arg) {
 				homeExists = true;
 				break;
 			}
 		}
 		
-		if (homeExists) {
-			player.getPersistentData().putString(MyCommands.MOD_ID + "homes", homes + " " + arg);
+		homes = MyCommands.push(homes, arg);
+		
+		if (homes.length < maxHomes && !homeExists) {
+			if (homeExists) {
+				player.getPersistentData().putString(MyCommands.MOD_ID + "homes", MyCommands.stringFromArray(homes));
+			}
+			
+			
+			player.getPersistentData().putIntArray(MyCommands.MOD_ID + arg,
+					new int[]{ playerPos.getX(), playerPos.getY(), playerPos.getZ() });
+			
+			source.sendSuccess(new TextComponent("Set new home: " + arg), true);
+			return 1;			
+		} else {
+			source.sendFailure(new TextComponent("You can only have " + maxHomes + " max homes!"));
+			return -1;
 		}
-		
-		
-		player.getPersistentData().putIntArray(MyCommands.MOD_ID + arg,
-				new int[]{ playerPos.getX(), playerPos.getY(), playerPos.getZ() });
-		
-		source.sendSuccess(new TextComponent("Set new home: " + arg), true);
-		return 1;
 	}
 }

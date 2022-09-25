@@ -1,5 +1,7 @@
 package com.ghxstsparky.mycommands;
 
+import java.util.Iterator;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,5 +24,25 @@ public class MyCommands {
 	
 	private void setup(final FMLCommonSetupEvent event) {
 		LOGGER.info("");
+	}
+	
+	public static String[] push(String[] array, String push) {
+	    String[] longer = new String[array.length + 1];
+	    System.arraycopy(array, 0, longer, 0, array.length);
+	    longer[array.length] = push;
+	    return longer;
+	}
+	
+	public static String stringFromArray(String[] array) {
+		String s = "";
+		for (int i = 0; i < array.length; i++) {
+			String c = array[i];
+			if (i == 0) {
+				s += c;
+			} else {
+				s += " " + c;
+			}
+		}
+		return s;
 	}
 }
