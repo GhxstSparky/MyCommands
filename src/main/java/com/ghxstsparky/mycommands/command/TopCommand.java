@@ -1,8 +1,6 @@
 package com.ghxstsparky.mycommands.command;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.ghxstsparky.mycommands.MyCommands;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
@@ -10,9 +8,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.server.level.ServerPlayer;
 
 public class TopCommand {
 	public TopCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -24,33 +20,16 @@ public class TopCommand {
 	}
 
 	private static int top(CommandSourceStack source) throws CommandSyntaxException {
-		Player player = source.getPlayerOrException();
+		ServerPlayer player = source.getPlayerOrException();
 		BlockPos playerPos = player.blockPosition();
-		int xPos = playerPos.getX();
 		int yPos = playerPos.getY();
-		int zPos = playerPos.getZ();
-		BlockPos block = new BlockPos(xPos+1, 320, zPos+1);
-		AABB aabb = new AABB(block, new BlockPos(xPos, yPos, zPos));
 		
-		Iterable<VoxelShape> shapes = player.getLevel().getBlockCollisions(player, aabb);
-		
-		if (!shapes.iterator().hasNext()) {
+		if (MyCommands.atTop(playerPos, player)) {
 			source.sendSuccess(new TextComponent("Already at top"), true);
 			return 1;
 		}
 		
-		List<BlockPos> blocks = new ArrayList<BlockPos>(0);
-		
-		shapes.forEach((e) -> {
-			double x = e.toAabbs().get(0).minX;
-			double y = e.toAabbs().get(0).minY+1;
-			double z = e.toAabbs().get(0).minZ;
-			blocks.add(new BlockPos(x, y, z));
-		});
-		
-		
-		
-		BlockPos topBlock = blocks.get(blocks.size()-1);
+		BlockPos topBlock = MyCommands.GetTopBlock(playerPos, player);
 		int ammountTraveled = topBlock.getY()-yPos;
 		
 		player.teleportTo(topBlock.getX(), topBlock.getY(), topBlock.getZ());
@@ -58,4 +37,6 @@ public class TopCommand {
 		source.sendSuccess(new TextComponent("Teleported " + ammountTraveled + " blocks."), true);
 		return 1;
 	}
+	
+	
 }
